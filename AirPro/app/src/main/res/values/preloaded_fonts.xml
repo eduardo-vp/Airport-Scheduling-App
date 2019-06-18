@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/actor</item>
+        <item>@font/droid_sans</item>
+        <item>@font/oxygen</item>
+        <item>@font/proza_libre</item>
+        <item>@font/quicksand</item>
+        <item>@font/voces</item>
+    </array>
+</resources>

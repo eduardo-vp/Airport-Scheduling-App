@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AirPro</string>
+    <string name="tab_text_1">Todos los vuelos</string>
+    <string name="tab_text_2">Nacional</string>
+    <string name="tab_text_3">Internacional</string>
+    <string name="tab_col1">Hora</string>
+    <string name="tab_col2">Procedencia</string>
+    <string name="tab_col3">Puerta</string>
+    <string name="Actualizar">Actualizar</string>
+</resources>
