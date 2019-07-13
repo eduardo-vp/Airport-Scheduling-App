@@ -1,5 +1,12 @@
 package com.example.dp1;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -9,6 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,15 +30,19 @@ import android.widget.Toast;
 
 import com.example.dp1.ui.main.SectionsPagerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
+    private String provider;
     private TabLayout tabs;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+
+        boolean enLima = seEncuentraEnLima();
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(),enLima);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         tabs = findViewById(R.id.tabs);
@@ -76,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
             */
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean seEncuentraEnLima(){
+
+        return false;
     }
 
 }

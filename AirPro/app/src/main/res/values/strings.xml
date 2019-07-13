@@ -3,8 +3,10 @@
     <string name="tab_text_1">Todos los vuelos</string>
     <string name="tab_text_2">Nacional</string>
     <string name="tab_text_3">Internacional</string>
+    <string name="tab_text_4">Error</string>
     <string name="tab_col1">Hora</string>
     <string name="tab_col2">Procedencia</string>
     <string name="tab_col3">Puerta</string>
     <string name="Actualizar">Actualizar</string>
+    <string name="ErrorMessage">No se pudo acceder a la información del GPS del celular o el usuario no se encuentra en la ciudad de Lima.</string>
 </resources>
