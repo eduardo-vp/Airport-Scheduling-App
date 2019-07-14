@@ -13,6 +13,10 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,6 +46,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity  {
 
+    boolean solicitando = false;
+    private FusedLocationProviderClient fusedLocationClient;
     private String finalAddress;
     private boolean enLima;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
@@ -53,15 +59,90 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        boolean enLima = false;
+        /* Obtener permisos */
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            // Permission is not granted
+            // Should we show an explanation?
+            solicitando = true;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+        }
+        /* Fin de obtener permisos */
 
-        enLima = seEncuentraEnLima();
-        /*
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(),enLima);
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-        tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
-        */
+        if(!solicitando) {
+            try {
+                Task<Location> x = fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    // Logic to handle location object
+                                }
+                            }
+                        });
+
+                while(x.isComplete() == false);
+
+                Location location = x.getResult();
+                if (location != null) {
+                    Log.d("Flag", "Linea 3");
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
+                    StringBuilder builder = new StringBuilder();
+                    try {
+                        List<Address> address = geoCoder.getFromLocation(lat, lng, 1);
+                        int maxLines = address.get(0).getMaxAddressLineIndex();
+                        for (int i = 0; i < maxLines; i++) {
+                            String addressStr = address.get(0).getAddressLine(i);
+                            builder.append(addressStr);
+                            builder.append(" ");
+                        }
+                        finalAddress = builder.toString();
+                        Log.d("FLAG", "Final Address = " + finalAddress);
+                        if (checkLima(finalAddress))
+                            enLima = true;
+                    } catch (IOException e) {
+                        // Handle IOException
+                    } catch (NullPointerException e) {
+                        // Handle NullPointerException
+                    }
+                } else {
+                    Log.d("Flag", "LOCATION ES NULLLL");
+                }
+                if (enLima) Log.d("Flag", "ESTAMOS EN LIMA");
+                else Log.d("Flag", "NO ESTAMOS EN LIMA UWU");
+            }catch(Exception e){
+
+            }
+            SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), enLima);
+            ViewPager viewPager = findViewById(R.id.view_pager);
+            viewPager.setAdapter(sectionsPagerAdapter);
+            tabs = findViewById(R.id.tabs);
+            tabs.setupWithViewPager(viewPager);
+        }
     }
 
     public void onRequestPermissionsResult(
@@ -69,18 +150,73 @@ public class MainActivity extends AppCompatActivity  {
             String[] permissions,
             int[] grantResults
     ){
-        Log.d("Reslt","FINAL ADDRESS = " + finalAddress);
-        if(enLima){
-            Log.d("Result","EN LIMAAAAAAAAAAAA");
-        }else{
-            Log.d("Result","FUERA DE LIMAAAAA");
+        if(solicitando){
+            try {
+                Task<Location> x = fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    // Logic to handle location object
+                                }else{
+                                    Log.d("FusedLocationClient","LOCATION ES NULL :(");
+                                }
+                            }
+                        });
+
+                while(x.isComplete() == false);
+
+                Location location = x.getResult();
+                if (location != null) {
+                    Log.d("Flag", "Linea 3");
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    Log.d("Flag","Lat = " + String.valueOf(lat));
+                    Log.d("Flag","Long = " + String.valueOf(lng));
+                    Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
+                    StringBuilder builder = new StringBuilder();
+                    try {
+                        List<Address> address = geoCoder.getFromLocation(lat, lng, 10000);
+                        int len = address.size();
+                        Log.d("Flag","Len = " + String.valueOf(len));
+                        /*
+                        int maxLines = address.get(0).getMaxAddressLineIndex();
+                        Log.d("Flag","MaxLines = " + String.valueOf(maxLines));
+                        for (int i = 0; i < maxLines; i++) {
+                            String addressStr = address.get(0).getAddressLine(i);
+                            builder.append(addressStr);
+                            builder.append(" ");
+                        }
+                        finalAddress = builder.toString();
+                        */
+                        for(Address ad : address){
+                            finalAddress = finalAddress + ad.toString();
+                        }
+                        /**/
+
+                        Log.d("FLAG", "Final Address = " + finalAddress);
+                        if (checkLima(finalAddress))
+                            enLima = true;
+                    } catch (IOException e) {
+                        // Handle IOException
+                    } catch (NullPointerException e) {
+                        // Handle NullPointerException
+                    }
+                } else {
+                    Log.d("Flag", "LOCATION ES NULLLL");
+                }
+                if (enLima) Log.d("Flag", "ESTAMOS EN LIMA");
+                else Log.d("Flag", "NO ESTAMOS EN LIMA UWU");
+            }catch(SecurityException e){
+
+            }
+            SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), enLima);
+            ViewPager viewPager = findViewById(R.id.view_pager);
+            viewPager.setAdapter(sectionsPagerAdapter);
+            tabs = findViewById(R.id.tabs);
+            tabs.setupWithViewPager(viewPager);
         }
-        Log.d("PERMISOOOOOOO","PERMISOOOOOOO");
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(),enLima);
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-        tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -116,6 +252,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private boolean seEncuentraEnLima(){
+        /*
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         provider = locationManager.getBestProvider(criteria, false);
@@ -144,34 +281,57 @@ public class MainActivity extends AppCompatActivity  {
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
             }
         }
-        try{
-        Location location = locationManager.getLastKnownLocation(provider);
-        if (location != null){
-            double lat = location.getLatitude();
-            double lng = location.getLongitude();
-            Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
-            StringBuilder builder = new StringBuilder();
-            try {
-                List<Address> address = geoCoder.getFromLocation(lat, lng, 1);
-                int maxLines = address.get(0).getMaxAddressLineIndex();
-                for (int i=0; i<maxLines; i++) {
-                    String addressStr = address.get(0).getAddressLine(i);
-                    builder.append(addressStr);
-                    builder.append(" ");
-                }
-                finalAddress = builder.toString();
-                Log.d("FLAG","Final Address = " + finalAddress);
-                if(checkLima(finalAddress))
-                    return true;
-            } catch (IOException e) {
-                // Handle IOException
-            } catch (NullPointerException e) {
-                // Handle NullPointerException
-            }
-        }
-        }catch(Exception e){
 
+        try{
+            Log.d("Flag","Linea 1");
+            //Location location = getLastKnownLocation(provider);
+            LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+            List<String> providers = mLocationManager.getProviders(true);
+            Location bestLocation = null;
+            for (String provider : providers) {
+                Location l = mLocationManager.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                }
+            }
+            Location location = bestLocation;
+            Log.d("Flag","Linea 2");
+            if (location != null){
+                Log.d("Flag","Linea 3");
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
+                StringBuilder builder = new StringBuilder();
+                try {
+                    List<Address> address = geoCoder.getFromLocation(lat, lng, 1);
+                    int maxLines = address.get(0).getMaxAddressLineIndex();
+                    for (int i=0; i<maxLines; i++) {
+                        String addressStr = address.get(0).getAddressLine(i);
+                        builder.append(addressStr);
+                        builder.append(" ");
+                    }
+                    finalAddress = builder.toString();
+                    Log.d("FLAG","Final Address = " + finalAddress);
+                    if(checkLima(finalAddress))
+                        return true;
+                } catch (IOException e) {
+                    // Handle IOException
+                } catch (NullPointerException e) {
+                    // Handle NullPointerException
+                }
+            }else{
+                Log.d("Flag","LOCATION ES NULLLL CTMRE");
+            }
+        }catch(Exception e){
+            Log.d("Flag","Falla aqui en el catch");
         }
         return false;
+        */
+        return false;
     }
+
 }
