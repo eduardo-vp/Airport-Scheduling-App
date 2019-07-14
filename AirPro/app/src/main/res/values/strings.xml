@@ -8,5 +8,8 @@
     <string name="tab_col2">Procedencia</string>
     <string name="tab_col3">Puerta</string>
     <string name="Actualizar">Actualizar</string>
+    <string name="title_location_permission">Se necesita permiso</string>
+    <string name="text_location_permission">Se necesita de la ubicación ya que la aplicación solo puede ser usada en la ciudad de Lima.</string>
+    <string name="ok">Ok</string>
     <string name="ErrorMessage">No se pudo acceder a la información del GPS del celular o el usuario no se encuentra en la ciudad de Lima.</string>
 </resources>
