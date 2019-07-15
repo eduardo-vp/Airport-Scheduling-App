@@ -4,9 +4,10 @@
     <string name="tab_text_2">Nacional</string>
     <string name="tab_text_3">Internacional</string>
     <string name="tab_text_4">Error</string>
-    <string name="tab_col1">Hora</string>
-    <string name="tab_col2">Procedencia</string>
-    <string name="tab_col3">Puerta</string>
+    <string name="tab_col1">Vuelo</string>
+    <string name="tab_col2">Hora</string>
+    <string name="tab_col3">Procedencia</string>
+    <string name="tab_col4">Puerta</string>
     <string name="Actualizar">Actualizar</string>
     <string name="title_location_permission">Se necesita permiso</string>
     <string name="text_location_permission">Se necesita de la ubicación ya que la aplicación solo puede ser usada en la ciudad de Lima.</string>

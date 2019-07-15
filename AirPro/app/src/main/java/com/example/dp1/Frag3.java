@@ -28,10 +28,10 @@ import org.json.JSONObject;
 
 public class Frag3 extends Fragment {
 
-    private String url = "https://pastebin.com/raw/pjfUQZL9";
+    private String url = "http://52.55.151.47:7497/api/vuelos";
     private TableLayout tableLayout;
     private RequestQueue requestQueue;
-    private final float [] weights = new float[] {20,60,20};
+    private final float [] weights = new float[] {20,20,45,15};
 
     @Nullable
     @Override
@@ -81,18 +81,19 @@ public class Frag3 extends Fragment {
                                 row.setWeightSum(100);
                                 TextView[]tv = new TextView[4];
 
-                                for(int j = 0; j < 3; ++j) {
+                                for(int j = 0; j < 4; ++j) {
                                     tv[j] = new TextView(getActivity());
                                     row.addView(tv[j]);
                                 }
-                                tv[0].setText(getHour(x.getString("fechaLlegada")));
-                                tv[1].setText(x.getString("ciudadOrigen"));
-                                tv[2].setText(x.getJSONObject("puerta").getString("numeroPuerta"));
-                                for(int j = 0; j < 3; ++j){
+                                tv[1].setText(getHour(x.getString("fechaLlegada")));
+                                tv[2].setText(x.getString("ciudadOrigen"));
+                                tv[3].setText(x.getJSONObject("puerta").getString("numeroPuerta"));
+                                tv[0].setText(x.getString("numeroVuelo"));
+                                for(int j = 0; j < 4; ++j){
                                     TableRow.LayoutParams lp = new TableRow.LayoutParams(0,TableRow.LayoutParams.WRAP_CONTENT,weights[j]);
                                     lp.setMargins(1,20,1,20);
                                     tv[j].setLayoutParams(lp);
-                                    tv[j].setTextSize(22);
+                                    tv[j].setTextSize(17);
                                     tv[j].setTypeface(ResourcesCompat.getFont(getActivity(),R.font.oxygen));
                                     tv[j].setGravity(Gravity.CENTER);
                                 }
